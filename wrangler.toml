@@ -24,32 +24,32 @@ crons = ["0 0 * * *"]
 
 [[routes]]
 # Refer to https://developers.cloudflare.com/workers/wrangler/configuration/#routes
-pattern = "shz.al"
+pattern = "paste.drfu.cc"
 custom_domain = true
 
 [[kv_namespaces]]
 binding = "PB"  # do not touch this
-id = "435f8959b9de485ea48751ba557d90f5"  # id of your KV namespace
+id = "62e9835311a9454cbf66bb1237bf6217"  # id of your KV namespace
 
 [[r2_buckets]]
 binding = "R2"  # do not touch this
-bucket_name = "pb-shz-al"  # bucket name of your R2 bucket
+bucket_name = "pastebin-r2"  # bucket name of your R2 bucket
 
 [vars]
 # must be consistent with your routes
-DEPLOY_URL = "https://shz.al"
+DEPLOY_URL = "https://paste.drfu.cc"
 
 # url to repo, displayed in the index page
-REPO = "https://github.com/SharzyL/pastebin-worker"
+REPO = "https://github.com/todrfu/pastebin-worker"
 
 # the page title displayed in index page
-INDEX_PAGE_TITLE = "Pastebin Worker"
+INDEX_PAGE_TITLE = "在线剪贴板/文件共享-小付自用版"
 
 # the name displayed in TOS
-TOS_MAINTAINER = "Sharzy"
+TOS_MAINTAINER = "todrfu"
 
 # the email displayed in TOS
-TOS_MAIL = "pb@shz.al"
+TOS_MAIL = "todrfu@gmail.com"
 
 # Cache-Control max-age for static pages
 CACHE_STATIC_PAGE_AGE = 7200
@@ -63,10 +63,6 @@ DEFAULT_EXPIRATION = "7d"
 # Max expiration
 MAX_EXPIRATION = "30d"
 
-# A collection of {username: password} pair
-# Leave empty to disable auth
-BASIC_AUTH = {}
-
 # Files larger than this threshold will be stored in R2
 R2_THRESHOLD = "100K"
 
@@ -75,3 +71,18 @@ R2_MAX_ALLOWED = "100M"
 
 # The following mimetypes will be converted to text/plain
 DISALLOWED_MIME_FOR_PASTE = ["text/html", "audio/x-mpegurl"]
+
+# A collection of {username: password} pair
+# Leave empty to disable auth
+[vars.BASIC_AUTH]
+drfu = "$2b$08$hZTmIliLG9O5mf3jgv2uleA71KhpgdAnsr6Ep2JI9f7IDyNCZRvQy"
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true

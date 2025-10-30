@@ -40,13 +40,13 @@ export function UploadedPanel({
 
   return (
     <Card classNames={mergeClasses({ base: tst }, { base: className })} {...rest}>
-      <CardHeader className="text-2xl pl-4 pb-2">Uploaded Paste</CardHeader>
+      <CardHeader className="text-2xl pl-4 pb-2">上传结果</CardHeader>
       <Divider />
       <CardBody>
         {isLoading ? (
           <div className={"min-h-[5rem] w-full relative"}>
             <CircularProgress
-              aria-label={"Loading..."}
+              aria-label={"加载中..."}
               value={loadingProgress}
               className={"absolute top-[50%] left-[50%] translate-[-50%]"}
             />
@@ -56,7 +56,7 @@ export function UploadedPanel({
             <>
               <Input
                 {...inputProps}
-                label={"Display URL"}
+                label={"展示链接"}
                 color={encryptionKey ? "success" : "default"}
                 value={makeDecryptionUrl(pasteResponse.url, encryptionKey)}
                 endContent={
@@ -68,19 +68,19 @@ export function UploadedPanel({
               />
               <Input
                 {...inputProps}
-                label={"Raw URL"}
+                label={"原始链接"}
                 value={pasteResponse.url}
                 endContent={<CopyWidget className={copyWidgetClassNames} getCopyContent={() => pasteResponse.url} />}
               />
               <Input
                 {...inputProps}
-                label={"Manage URL"}
+                label={"管理链接"}
                 value={pasteResponse.manageUrl}
                 endContent={
                   <CopyWidget className={copyWidgetClassNames} getCopyContent={() => pasteResponse.manageUrl} />
                 }
               />
-              <Input {...inputProps} label={"Expiration"} value={new Date(pasteResponse.expireAt).toLocaleString()} />
+              <Input {...inputProps} label={"到期时间"} value={new Date(pasteResponse.expireAt).toLocaleString()} />
             </>
           )
         )}

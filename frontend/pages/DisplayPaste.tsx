@@ -22,7 +22,7 @@ const utf8CompatibleEncodings = ["UTF-8", "ASCII", "ISO-8859-1"]
 
 export function DisplayPaste() {
   const [pasteFile, setPasteFile] = useState<File | undefined>(undefined)
-  const [pasteContentBuffer, setPasteContentBuffer] = useState<ArrayBuffer | undefined>(undefined)
+  const [pasteContentBuffer, setPasteContentBuffer] = useState<ArrayBuffer | Uint8Array | undefined>(undefined)
   const [pasteLang, setPasteLang] = useState<string | undefined>(undefined)
 
   const [isFileBinary, setFileBinary] = useState(false)
@@ -56,7 +56,7 @@ export function DisplayPaste() {
         setIsLoading(true)
         const resp = await fetch(pasteUrl)
         if (!resp.ok) {
-          await handleFailedResp("Failed to Fetch Paste", resp)
+          await handleFailedResp("获取粘贴失败", resp)
           return
         }
 
@@ -91,17 +91,17 @@ export function DisplayPaste() {
           try {
             key = await decodeKey(scheme, keyString)
           } catch {
-            showModal("Error", `Failed to parse “${keyString}” as ${scheme} key`)
+            showModal("错误", `无法将 “${keyString}” 解析为 ${scheme} 密钥`)
             return
           }
           if (key === undefined) {
-            showModal("Error", `Failed to parse “${keyString}” as ${scheme} key`)
+            showModal("错误", `无法将 “${keyString}” 解析为 ${scheme} 密钥`)
             return
           }
 
-          const decrypted = await decrypt(scheme, key, respBytes)
+          const decrypted = await decrypt(scheme, key, new Uint8Array(respBytes))
           if (decrypted === null) {
-            showModal("Error", "Failed to decrypt content")
+            showModal("错误", "内容解密失败")
             return
           }
 
@@ -119,7 +119,7 @@ export function DisplayPaste() {
       }
     }
     fetchPaste().catch((e) => {
-      showModal(`Error on fetching ${pasteUrl}`, (e as Error).toString())
+      showModal(`获取 ${pasteUrl} 失败`, (e as Error).toString())
       console.error(e)
     })
   }, [])
@@ -128,9 +128,9 @@ export function DisplayPaste() {
     <div className="absolute top-[50%] left-[50%] translate-[-50%] flex flex-col items-center w-full">
       <div className="text-foreground-600 mb-2">{`${pasteFile?.name} (${formatSize(pasteFile.size)})`}</div>
       <div className="w-fit text-center">
-        This file seems to be binary or not in UTF-8{guessedEncoding ? ` (${guessedEncoding} guessed). ` : ". "}
+        该文件看起来是二进制文件，或不是 UTF-8 编码{guessedEncoding ? `（猜测为 ${guessedEncoding}）。 ` : "。 "}
         <button className="text-primary-500 inline" onClick={() => setForceShowBinary(true)}>
-          (Click to show)
+          （点击查看）
         </button>
       </div>
     </div>
@@ -154,17 +154,17 @@ export function DisplayPaste() {
             <span className="mx-2">{" / "}</span>
             <code>{name}</code>
             <span className="ml-1">
-              {isDecrypted === "decrypted" ? " (Decrypted)" : isDecrypted === "encrypted" ? " (Encrypted)" : ""}
+              {isDecrypted === "decrypted" ? "（已解密）" : isDecrypted === "encrypted" ? "（已加密）" : ""}
             </span>
           </h1>
           {showFileContent && (
-            <Tooltip content={`Copy to clipboard`}>
+            <Tooltip content={`复制到剪贴板`}>
               <CopyWidget className={buttonClasses} getCopyContent={() => pasteStringContent!} />
             </Tooltip>
           )}
           {pasteFile && (
-            <Tooltip content={`Download as file`}>
-              <Button aria-label="Download" isIconOnly className={buttonClasses}>
+            <Tooltip content={`下载为文件`}>
+              <Button aria-label="下载" isIconOnly className={buttonClasses}>
                 <a href={URL.createObjectURL(pasteFile)} download={pasteFile.name}>
                   <DownloadIcon className="size-6 inline" />
                 </a>
@@ -179,7 +179,7 @@ export function DisplayPaste() {
               <div className={"h-[10em]"}>
                 <CircularProgress
                   className="h-[10em] absolute top-[50%] left-[50%] translate-[-50%]"
-                  label={"Loading..."}
+                  label={"加载中..."}
                 />
               </div>
             ) : (
@@ -192,7 +192,7 @@ export function DisplayPaste() {
                         <span>{`(${formatSize(pasteFile.size)})`}</span>
                         {forceShowBinary && (
                           <button className="ml-2 text-primary-500" onClick={() => setForceShowBinary(false)}>
-                            (Click to hide)
+                            （点击收起）
                           </button>
                         )}
                         {pasteLang && <span className={"grow text-right"}>{pasteLang}</span>}

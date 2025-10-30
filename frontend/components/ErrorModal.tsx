@@ -45,7 +45,7 @@ export function useErrorModal() {
           </ModalBody>
           <ModalFooter>
             <Button color="danger" variant="light" onPress={onClose}>
-              Close
+              关闭
             </Button>
           </ModalFooter>
         </ModalContent>

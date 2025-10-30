@@ -47,7 +47,7 @@ describe("Pastebin", () => {
   it("can upload", async () => {
     render(<PasteBin />)
 
-    const title = screen.getByText("Pastebin Worker")
+    const title = screen.getByText("在线剪贴板/文件共享")
     expect(title).toBeInTheDocument()
 
     const editor = screen.getByRole("textbox", { name: "Paste editor" })
